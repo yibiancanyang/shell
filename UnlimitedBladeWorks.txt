@@ -1,0 +1,29 @@
+tophat
+export PATH=$PATH:/home/thomas/software_database/rnaseq
+tophat2 -p 32 --keep-fasta-order --GTF oyster_genome.gtf -o tophat_ss2_me_out oyster_genome ss2_me.fastq
+cd tophat_ss2_me_out/
+
+SamToFastq
+java -jar /home/thomas/software_database/picard-tools-2.1.1/picard.jar SamToFastq I=unmapped.bam FASTQ=unmapped.fastq VALIDATION_STRINGENCY=LENIENT 2>error.log
+
+bowtie2
+bowtie2 --local --very-sensitive-local -p 32 --mm -x oyster_genome -U unmapped.fastq | samtools view -uhS -F4 - | samtools sort - unmapped_remap
+
+MergeSamFiles
+java -jar /home/thomas/software_database/picard-tools-2.1.1/picard.jar MergeSamFiles USE_THREADING=true MSD=true AS=true I=accepted_hits.bam I=unmapped_remap.bam O=aligned.bam
+
+genome_size
+file:///home/thomas/ori_data/oyster_chip_seq/chipdata/genome_size.pl scripture.segments -chrSequence oyster_genome.fa -sizeFile oyster_genome.size
+
+scripture
+java -jar /home/thomas/ori_data/oyster_chip_seq/scripture-beta2.jar -alignment aligned.bam -out ss1_ac.scripture.segments -sizeFile oyster_genome.size -chrSequence oyster_genome.fa
+
+cufflinks
+cufflinks -p 32 -o cufflinks-SS-1 tophat_SS-1_out/aligned.bam
+
+cuffmerge
+cuffmerge -g oyster_genome_filter_N_five_chr.gtf -s oyster_genome_filter_N_five_chr.fa -p 32 gtf_list.txt 
+
+cuffdiff
+cuffdiff -o diff_out -b oyster_genome.fa -p 32 –L C1,C2 -u merged_asm/transcripts.gtf
+

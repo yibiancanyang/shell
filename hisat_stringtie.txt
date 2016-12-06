@@ -1,0 +1,74 @@
+export PATH=~/software_database/rnaseq:$PATH
+gffread ref_oyster_v9_scaffolds.gff3 -T -o ref_oyster_v9_scaffolds.gtf
+
+extract_exons.py oyster_genome_filter_N_five_chr.gtf >oyster.exon
+extract_splice_sites.py oyster_genome_filter_N_five_chr.gtf >oyster.ss
+hisat2-build --ss oyster.ss --exon oyster.exon oyster_genome_filter_N_five_chr.fa oyster_tran
+hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334276_1.fastq -S ./dried_bam/dried_gills_1d.sam
+hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334277_1.fastq -S ./dried_bam/dried_gills_3d.sam
+hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334278_1.fastq -S ./dried_bam/dried_gills_5d.sam
+hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334279_1.fastq -S ./dried_bam/dried_gills_7d.sam
+hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334280_1.fastq -S ./dried_bam/dried_gills_9d.sam
+hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334281_1.fastq -S ./dried_bam/dried_gills_10d.sam
+hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334282_1.fastq -S ./dried_bam/dried_gills_11d.sam
+samtools view -bS dried_gills_1d.sam >unsorted_dried_gills_1d.bam
+samtools view -bS dried_gills_3d.sam >unsorted_dried_gills_3d.bam
+samtools view -bS dried_gills_5d.sam >unsorted_dried_gills_5d.bam
+samtools view -bS dried_gills_7d.sam >unsorted_dried_gills_7d.bam
+samtools view -bS dried_gills_9d.sam >unsorted_dried_gills_9d.bam
+samtools view -bS dried_gills_10d.sam >unsorted_dried_gills_10d.bam
+samtools view -bS dried_gills_11d.sam >unsorted_dried_gills_11d.bam
+samtools sort -@ 8 unsorted_dried_gills_1d.bam dried_gills_1d.bam
+samtools sort -@ 8 unsorted_dried_gills_3d.bam dried_gills_3d.bam
+samtools sort -@ 8 unsorted_dried_gills_5d.bam dried_gills_5d.bam
+samtools sort -@ 8 unsorted_dried_gills_7d.bam dried_gills_7d.bam
+samtools sort -@ 8 unsorted_dried_gills_9d.bam dried_gills_9d.bam
+samtools sort -@ 8 unsorted_dried_gills_10d.bam dried_gills_10d.bam
+samtools sort -@ 8 unsorted_dried_gills_11d.bam dried_gills_11d.bam
+stringtie -p 32 -G ./genome/oyster_genome_filter_N_five_chr.gtf -o dried_gills_1d.gtf -l dried_gills_1d dried_gills_1d.bam
+stringtie -p 32 -G ./genome/oyster_genome_filter_N_five_chr.gtf -o dried_gills_3d.gtf -l dried_gills_3d dried_gills_3d.bam
+stringtie -p 32 -G ./genome/oyster_genome_filter_N_five_chr.gtf -o dried_gills_5d.gtf -l dried_gills_5d dried_gills_5d.bam
+stringtie -p 32 -G ./genome/oyster_genome_filter_N_five_chr.gtf -o dried_gills_7d.gtf -l dried_gills_7d dried_gills_7d.bam
+stringtie -p 32 -G ./genome/oyster_genome_filter_N_five_chr.gtf -o dried_gills_9d.gtf -l dried_gills_9d dried_gills_9d.bam
+stringtie -p 32 -G ./genome/oyster_genome_filter_N_five_chr.gtf -o dried_gills_10d.gtf -l dried_gills_10d dried_gills_10d.bam
+stringtie -p 32 -G ./genome/oyster_genome_filter_N_five_chr.gtf -o dried_gills_11d.gtf -l dried_gills_11d dried_gills_11d.bam
+stringtie --merge -p 32 -G ./genome/oyster_genome_filter_N_five_chr.gtf -o stringtie_merged.gtf mergelist.txt
+gffcompare -r genome/oyster_genome_filter_N_five_chr.gtf -o merged stringtie_merged.gtf 
+stringtie -e -B -p 32 -G stringtie_merged.gtf -o ballgown/1d/dried_gills_1d.gtf dried_gills_1d.bam
+stringtie -e -B -p 32 -G stringtie_merged.gtf -o ballgown/3d/dried_gills_3d.gtf dried_gills_3d.bam
+stringtie -e -B -p 32 -G stringtie_merged.gtf -o ballgown/5d/dried_gills_5d.gtf dried_gills_5d.bam
+stringtie -e -B -p 32 -G stringtie_merged.gtf -o ballgown/7d/dried_gills_7d.gtf dried_gills_7d.bam
+stringtie -e -B -p 32 -G stringtie_merged.gtf -o ballgown/9d/dried_gills_9d.gtf dried_gills_9d.bam
+stringtie -e -B -p 32 -G stringtie_merged.gtf -o ballgown/10d/dried_gills_10d.gtf dried_gills_10d.bam
+stringtie -e -B -p 32 -G stringtie_merged.gtf -o ballgown/11d/dried_gills_11d.gtf dried_gills_11d.bam
+
+
+install.packages("devtools",repos="http://cran.us.r-project.org")
+>library(ballgown)
+>library(RSkittleBrewer) 
+>library(genefilter)
+>library(dplyr)
+>library(devtools)
+data_directory = "E:/Rworkspace/extdata"
+bg = ballgown(dataDir=data_directory, samplePattern='sample',pData=pheno_data)
+bg_filt = subset(bg,"rowVars(texpr(bg)) >1",genomesubset=TRUE)
+>results_transcripts = stattest(bg_filt, feature="transcript",meas='FPKM',covariate='time', timecourse=TRUE)
+>results_genes = stattest(bg_filt, feature="gene", meas='FPKM',covariate='time', timecourse=TRUE)
+results_transcripts = data.frame(geneNames=ballgown::geneNames(bg_filt),geneIDs=ballgown::geneIDs(bg_filt), results_transcripts)
+>write.csv(results_transcripts, "transcript_results.csv", row.names=FALSE)
+>write.csv(results_genes, "gene_results.csv", row.names=FALSE) 
+>tropical= c('darkorange', 'dodgerblue',  'hotpink', 'limegreen', 'yellow')
+>palette(tropical)
+>fpkm = texpr(bg,meas="FPKM")
+>fpkm = log2(fpkm+1)
+boxplot(fpkm,col=as.numeric(pheno_data$time),las=2,ylab='log2(FPKM+1)')
+
+hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334283.fastq -S ./dried_bam/dried_muscle_0d.sam
+hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334284.fastq -S ./dried_bam/dried_muscle_1d.sam
+hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334285.fastq -S ./dried_bam/dried_muscle_3d.sam
+hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334286.fastq -S ./dried_bam/dried_muscle_5d.sam
+hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334287.fastq -S ./dried_bam/dried_muscle_7d.sam
+hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334288.fastq -S ./dried_bam/dried_muscle_9d.sam
+hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334289.fastq -S ./dried_bam/dried_muscle_10d.sam
+hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334290.fastq -S ./dried_bam/dried_muscle_11d.sam
+
