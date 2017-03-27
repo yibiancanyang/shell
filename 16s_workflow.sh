@@ -45,5 +45,5 @@ Counts/sample detail:
 ############################################################
 #根据各个sample的counts数确定差异分析参数，取各样本最小值
 core_diversity_analyses.py -o cdout/ -i otus/otu_table_mc2_w_tax_no_pynast_failures.biom -m map.tsv -t otus/rep_set.tre -e 27310
-根据map.tsv各栏参数作组间差异分析
+#根据map.tsv各栏参数作组间差异分析
 core_diversity_analyses.py -o cdout/ --recover_from_failure -c "SampleType" -i otus/otu_table_mc2_w_tax_no_pynast_failures.biom -m map.tsv -t otus/rep_set.tre -e 27310
