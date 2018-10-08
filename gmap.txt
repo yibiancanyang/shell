@@ -1,0 +1,10 @@
+ls *.fq | while read id; do (nohup gsnap -D ~/genome/oyster/ensembl/oyster_gmap -d oyster_gmap -t 3 -B 5 -Q -s ~/genome/oyster/ensembl/oyster_gmap_gtf.index.iit -Q -A sam $id > ./bam/gmap/${id%%.*}.sam &);done
+ls *.fq | while read id; do (nohup gsnap -D ~/genome/oyster/ensembl/oyster_gmap -d oyster_gmap -t 4 -B 5 -s ~/genome/oyster/ensembl/oyster_gmap_gtf.index.iit -Q -A sam -o ${id%%.*}.sam $id > ./bam/gmap/${id%%.*}.log &);done
+htseq-count -f bam -m intersection-nonempty -s no  SS-3.bam ~/genome/oyster/ensembl/Crassostrea_gigas.oyster_v9.37.gtf 1>SS-3.genecounts 2>SS-3.HTseq.log
+ls *.fq | while read id; do (nohup gsnap -D ~/genome/oyster/ensembl/oyster_gmap -d oyster_gmap -t 4 --use-shared-memory=0 -B 5 -Q -s ~/genome/oyster/ensembl/oyster_gmap_gtf.index.iit -Q -A sam -o ./bam/gmap/${id%%.*}.sam $id > ./bam/gmap/${id%%.*}.log &);done
+annotation_row = data.frame(Cluster = factor(paste0('Cluster',cutree(a$tree_row,6))))
+rownames(annotation_row) = rownames(log_diff_genes)
+Granulocyte
+Semi-granulocyte
+Agranulocyte
+c(Agranulocyte_a,Agranulocyte_b,Agranulocyte_c,Agranulocyte_d,Agranulocyte_e,Agranulocyte_f,Agranulocyte_g,Semi-granulocyte_a,Semi-granulocyte_b,Semi-granulocyte_c,Semi-granulocyte_d,Semi-granulocyte_e,Semi-granulocyte_f,Semi-granulocyte_g,Granulocyte_a,Granulocyte_b,Granulocyte_c,Granulocyte_d,Granulocyte_e,Granulocyte_f)

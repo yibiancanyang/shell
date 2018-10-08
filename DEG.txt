@@ -1,0 +1,44 @@
+for ((i=212;i<=221;i++));do (let j=${i}+199;nohup axel -n 10 ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByExp/sra/SRX/SRX093/SRX093$j/SRR334$i/SRR334$i.sra &);done
+for ((i=582;i<=598;i++)) ;do nohup axel -n 10 ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR796/SRR796$i/SRR796$i.sra&;done
+ls *.sra | while read id;do (nohup  ~/software_package/sratoolkit.2.8.2-1-ubuntu64/bin/fastq-dump --split-3 $id &);done
+ls *.fastq | while read id;do (nohup ~/software_package/NGSQCToolkit_v2.3.3/QC/IlluQC_PRLL.pl -se $id 4 A -c 5 &);done
+ls *.fastq_filtered | while read id;do (nohup hisat2 -p 3 -x ~/genome/oyster/oyster_tran -U $id -S ./bam/${id%%.*}.sam >${id%%.*}.log &);done
+ls *.sam | while read id;do (nohup ~/.local/bin/htseq-count -f sam -m intersection-nonempty -s no -i gene $id ~/genome/oyster/GCF_000297895.1_oyster_v9_genomic.gff 1>${id%%.*}.genecounts 2>${id%%.*}.HTseq.log&);done
+library(DESeq2)
+countData=as.matrix(read.csv(file="total_counts.csv")
+rownames(countData)=countData[,1]
+countData=countData[,-1]
+counts <- countData[ rowSums(countData) > 1, ]
+normal_counts=varianceStabilizingTransformation(countData, blind = FALSE)
+group_list=as.matrix(read.csv(file="group.csv",row.names = "sample",header=TRUE))
+dds=DESeqDataSetFromMatrix(countData = countData,colData = group_list,design=~ time)
+dds2=DESeq(dds)
+res=results(dds2,contrast = c("time","early","later"))
+resOrdered <- res[order(res$padj),]
+resOrdered=as.data.frame(resOrdered)
+sig=subset(resOrdered,resOrdered$padj<0.05)
+write.csv(sig,file="DEG.csv")
+rld <- rlogTransformation(dds2)
+exprSet_new=assay(rld)
+par(cex = 0.7)
+n.sample=ncol(exprSet)
+if(n.sample>40) par(cex = 0.5)
+cols <- rainbow(n.sample*1.2)
+par(mfrow=c(2,2))
+boxplot(exprSet, col = cols,main="expression value",las=2)
+boxplot(exprSet_new, col = cols,main="expression value",las=2)
+
+
+
+#WGCNA
+countData=as.matrix(read.csv(file="genecounts.csv",row.names = "gene_name",header=TRUE))
+normal=rlog(countData)
+par(cex = 0.7)
+n.sample=ncol(normal)
+if(n.sample>40) par(cex = 0.5)
+cols <- rainbow(n.sample*1.2)
+par(mfrow=c(2,2))
+boxplot(normal, col = cols,main="expression value",las=2)
+boxplot(countData, col = cols,main="expression value",las=2)
+
+hist(exprSet)

@@ -1,0 +1,28 @@
+library(SGSeq)
+library(AnnotationDbi)
+> txdb=loadDb("~/genome/oyster/ensembl/txdb.cgigas.ensembl.sqlite")
+Loading required package: GenomicFeatures
+
+txf_ucsc <- convertToTxFeatures(txdb)
+sgf_ucsc <- convertToSGFeatures(txf_ucsc)
+sgfc_ucsc <- analyzeFeatures(si_complete, features = txf_ucsc)
+
+
+
+
+
+
+setwd("~/wwl/CleanData/bam/")
+sample_neme=c("p2a_1.bam",  "p2d_1.bam",  "p2g_1.bam",   "p3c_1.bam",  "p3f_1.bam",  "p4b_1.bam",  "p4e_1.bam",
++               "p2b_1.bam",  "p2e_1.bam",  "p3a_1.bam",   "p3d_1.bam",  "p3g_1.bam",  "p4c_1.bam",  "p4f_1.bam",
++               "p2c_1.bam",  "p2f_1.bam",  "p3b_re.bam",  "p3e_1.bam",  "p4a_1.bam",  "p4d_1.bam"
++ )
+sample_info$file_bam <- file.path(path, as.character(sample_neme))
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ trusty main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ trusty main restricted universe multiverse
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ trusty-updates main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ trusty-updates main restricted universe multiverse
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ trusty-backports main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ trusty-backports main restricted universe multiverse
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ trusty-security main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ trusty-security main restricted universe multiverse

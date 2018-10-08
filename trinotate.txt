@@ -1,0 +1,259 @@
+2011  mkdir trinotate
+ 2012  cd trinotate/
+ 2013  cd ..
+ 2014  cp uniprot_sprot.pep.gz ./trinotate/
+ 2015  cd trinotate/
+ 2016  ls
+ 2017  gunzip uniprot_sprot.pep.gz 
+ 2018  makeblastdb  -in uniprot_sprot.pep -dbtype prot
+ 2019  ls
+ 2020  gunzip Pfam-A.hmm.gz
+ 2021  hmmpress Pfam-A.hmm
+ 2022  ls
+ 2023  top
+ 2024  blastx -query yellow_mRNA.fa -db uniprot_sprot.pep -num_threads 32 -max_target_seqs 1 -outfmt 6 > blastx.outfmt6
+ 2025  ls
+ 2026  vo uniprot_sprot.pep
+ 2027  vi uniprot_sprot.pep
+ 2028  cd ~/software_database/
+ 2029  ls
+ 2030  tar -zxvf TransDecoder-3.0.1.tar.gz 
+ 2031  ls
+ 2032  cd TransDecoder-3.0.1
+ 2033  ls
+ 2034  cp TransDecoder.LongOrfs TransDecoder.Predict ../rnaseq
+ 2035  cd ../rnaseq/
+ 2036  ls
+ 2037  cd ~/GCH/trinotate/
+ 2038  ls
+ 2039  TransDecoder.LongOrfs -t yellow_mRNA.fa 
+ 2040  ~/software_database/TransDecoder-3.0.1/TransDecoder.LongOrfs -t yellow_mRNA.fa 
+ 2041  ls
+ 2042  cd yellow_mRNA.fa.transdecoder_dir/
+ 2043  ls
+ 2044  top
+ 2045  cd ..
+ 2046  blastp -query ./yellow_mRNA.fa.transdecoder_dir/longest_orfs.pep -db uniprot_sprot.pep -num_threads 32 -max_target_seqs 1 -outfmt 6 > blastp.outfmt6
+ 2047  ls
+ 2048  cd yellow_mRNA.fa.transdecoder_dir/
+ 2049  ls
+ 2050  cd ..
+ 2051  hmmscan --cpu 32 --domtblout pfam.domblout Pfam-A.hmm yellow_mRNA.fa.transdecoder_dir/longest_orfs.pep 
+ 2052  ls
+ 2053  cd yellow_mRNA.fa.transdecoder_dir/
+ 2054  ls
+ 2055  cd ..
+ 2056  ~/software_database/TransDecoder-3.0.1/TransDecoder.Predict -t yellow_mRNA.fa -retain_pfam_hits pfam.domblout -retain_blastp_hits blastp.outfmt6
+ 2057  ~/software_database/TransDecoder-3.0.1/TransDecoder.Predict -t yellow_mRNA.fa --retain_pfam_hits pfam.domblout --retain_blastp_hits blastp.outfmt6
+ 2058  ls
+ 2059  ~/software_database/TransDecoder-3.0.1/TransDecoder.Predict -t yellow_mRNA.fa --retain_pfam_hits pfam.domblout --retain_blastp_hits blastp.outfmt6
+ 2060  cd ~/software_database/TransDecoder-3.0.1/
+ 2061  ls
+ 2062  make
+ 2063  ls
+ 2064  cd ~/GCH/
+ 2065  ls
+ 2066  cd trinotate/
+ 2067  ls
+ 2068  ~/software_database/TransDecoder-3.0.1/TransDecoder.Predict -t yellow_mRNA.fa --retain_pfam_hits pfam.domblout --retain_blastp_hits blastp.outfmt6
+ 2069  ls
+ 2070  blastp -query yellow_mRNA.fa.transdecoder.pep -db uniprot_sprot.pep -num_threads 32 -max_target_seqs 1 -outfmt 6 > blastp.outfmt6
+ 2071  hmmscan --cpu 32 --domblout pfam.domblout Pfam-A.hmm yellow_mRNA.fa.transdecoder.pep  >pfam.log
+ 2072  hmmscan --cpu 32 --domblout pfam.domblout Pfam-A.hmm yellow_mRNA.fa.transdecoder.pep  > pfam.log
+ 2073  ls
+ 2074  vi pfam.
+ 2075  vi pfam.log 
+ 2076  signalp -f short -n signalp.out yellow_mRNA.fa.transdecoder.pep 
+ 2077  ~/software_database/signalp-4.1/signalp -f short -n signalp.out yellow_mRNA.fa.transdecoder.pep 
+ 2078  tmhmm --help
+ 2079  ~/software_database/tmhmm-2.0c/bin/tmhmm --short <yellow_mRNA.fa.transdecoder.pep> thhmm.out
+ 2080  ls
+ 2081  ~/software_database/Trinotate-3.0.1/util/rnammer_support/RnammerTranscriptome.pl  --transcriptome yellow_mRNA.fa --path_to_rnammer ~/software_database/rnammer-1.2.src/rnammer 
+ 2082  ls
+ 2083  ~/software_database/Trinotate-3.0.1/util/rnammer_support/RnammerTranscriptome.pl  --transcriptome yellow_mRNA.fa --path_to_rnammer ~/software_database/rnammer-1.2.src/rnammer 
+ 2084  ls
+ 2085  ll
+ 2086  vi tmp.superscaff.rnammer.gff 
+ 2087  ~/software_database/Trinotate-3.0.1/util/rnammer_support/RnammerTranscriptome.pl  --transcriptome yellow_mRNA.fa --path_to_rnammer ~/software_database/rnammer-1.2.src/rnammer cd /home/thomas/software_database/Trinotate-3.0.0
+ 2088  cd /home/thomas/software_database/Trinotate-3.0.0
+ 2089  ls
+ 2090  cp Trinotate_V3.sqlite ~/GCH/trinotate/
+ 2091  cd ~/GCH/trinotate/
+ 2092  ls
+ 2093  ~/software_database/trinityrnaseq-Trinity-v2.3.2/
+ 2094  ~/software_database/trinityrnaseq-Trinity-v2.3.2/util/support_scripts/get_Trinity_gene_to_trans_map.pl yellow_mRNA.fa > yellow_mRNA.fa.gene_trans_map
+ 2095  ls
+ 2096  adddotone.pl LOCtoXM.txt  out.txt
+ 2097  perl adddotone.pl LOCtoXM.txt  out.txt
+ 2098  ls
+ 2099  ll
+ 2100  vi out.txt 
+ 2101  rm out.txt 
+ 2102  ls
+ 2103  vi LOCtoXM.txt 
+ 2104  ls
+ 2105  vi adddotone.pl 
+ 2106  perl adddotone.pl LOCtoXM.txt  out.txt
+ 2107  ll
+ 2108  more out.txt 
+ 2109  rm out.txt 
+ 2110  vi adddotone.pl 
+ 2111  ls
+ 2112  ~/software_database/Trinotate-3.0.1/Trinotate Trinotate_V3.sqlite  init --gene_trans_map LOCtoXM.txt --transcript_fasta yellow_mRNA.fa --transdecoder_pep yellow_mRNA.fa.transdecoder.pep 
+ 2113  ls
+ 2114  vi LOCtoXM.txt 
+ 2115  ls
+ 2116  vi yellow_mRNA.fa.transdecoder.pep 
+ 2117  ~/software_database/Trinotate-3.0.1/Trinotate Trinotate_V3.sqlite init --transcript_fasta yellow_mRNA.fa --transdecoder_pep yellow_mRNA.fa.transdecoder.pep 
+ 2118  ~/software_database/Trinotate-3.0.1/Trinotate --sqlite Trinotate_V3.sqlite --gene_trans_map LOCtoXM.txt --transcript_fasta yellow_mRNA.fa --transdecoder_pep yellow_mRNA.fa.transdecoder.pep 
+ 2119  ~/software_database/Trinotate-3.0.1/Trinotate --sqlite ~/GCH/Trinotate_V3.sqlite --gene_trans_map LOCtoXM.txt --transcript_fasta yellow_mRNA.fa --transdecoder_pep yellow_mRNA.fa.transdecoder.pep 
+ 2120  ~/software_database/Trinotate-3.0.1/Trinotate --sqlite ~/GCH/Trinotate_V3.sqlite init --gene_trans_map LOCtoXM.txt --transcript_fasta yellow_mRNA.fa --transdecoder_pep yellow_mRNA.fa.transdecoder.pep 
+ 2121  ~/software_database/Trinotate-3.0.1/Trinotate --sqlite Trinotate_V3.sqlite init --gene_trans_map LOCtoXM.txt --transcript_fasta yellow_mRNA.fa --transdecoder_pep yellow_mRNA.fa.transdecoder.pep 
+ 2122  ls
+ 2123  ll
+ 2124  cp Trinotate_V3.sqlite ~/software_database/Trinotate-3.0.1
+ 2125  ~/software_database/Trinotate-3.0.1/Trinotate --sqlite Trinotate_V3.sqlite init --gene_trans_map LOCtoXM.txt --transcript_fasta yellow_mRNA.fa --transdecoder_pep yellow_mRNA.fa.transdecoder.pep 
+ 2126  sl
+ 2127  ls
+ 2128  ~/software_database/Trinotate-3.0.1/Trinotate --sqlite Trinotate_V3.sqlite init --gene_trans_map LOCtoXM.txt --transcript_fasta yellow_mRNA.fa --transdecoder_pep yellow_mRNA.fa.transdecoder.pep 
+ 2129  cd ..
+ 2130  cd trinotate/
+ 2131  ls
+ 2132* ~/software_database/Trinotate-3.0.1/Trinotate --sqlite /home/thomas/GCH/trinotate/Trinotate_V3.sqlite init --gene_trans_map LOCtoXM.txt --transcript_fasta yellow_mRNA.fa --tr
+ 2133  cd /home/thomas/software_database/Trinotate-3.0.1
+ 2134  ls
+ 2135  cp Trinotate ~/GCH/trinotate/
+ 2136  cd ~/GCH/trinotate/
+ 2137  ls
+ 2138  Trinotate --help
+ 2139  Trinotate
+ 2140  ./Trinotate --help
+ 2141  ./Trinotate Trinotate_V3.sqlite init --gene_trans_map LOCtoXM.txt --transcript_fasta yellow_mRNA.fa --transdecoder_pep yellow_mRNA.fa.transdecoder.pep 
+ 2142  ~/software_database/Trinotate-3.0.0/Trinotate Trinotate_V3.sqlite init --gene_trans_map LOCtoXM.txt --transript_fasta --transdecoder_pep yellow_mRNA.fa.transdecoder.pep 
+ 2143  ~/software_database/Trinotate-3.0.1/Trinotate Trinotate_V3.sqlite init --gene_trans_map LOCtoXM.txt --transript_fasta --transdecoder_pep yellow_mRNA.fa.transdecoder.pep 
+ 2144  cd ~/software_database/Trinotate-3.0.1/
+ 2145  make
+ 2146  ls
+ 2147  cd util/
+ 2148  ls
+ 2149  vi sqlite.pl 
+ 2150  sl
+ 2151  ls
+ 2152  vi auto_Trinotate.txt 
+ 2153  cd ~/GCH/trinotate/
+ 2154  ls
+ 2155  vi LOCtoXM.txt 
+ 2156  ls
+ 2157  vi yellow_mRNA.fa
+ 2158  ls
+ 2159  vi adddotone.pl 
+ 2160  cd ..
+ 2161  cd trinotate/
+ 2162  ls
+ 2163  vi adddotone.pl 
+ 2164  ls
+ 2165  cp yellow_mRNA.fa ./test.fa
+ 2166  ls
+ 2167  perl adddotone.pl test.fa out.fa
+ 2168  vi out.fa 
+ 2169  vi adddotone.pl 
+ 2170  rm out.fa 
+ 2171  perl adddotone.pl test.fa out.fa
+ 2172  ll
+ 2173  rm out.fa 
+ 2174  vi adddotone.pl 
+ 2175  perl adddotone.pl test.fa out.fa
+ 2176  ll
+ 2177  vi yellow_mRNA.fa
+ 2178  ls
+ 2179  perl adddotone.pl test.fa out.fa
+ 2180  ll
+ 2181  vi out.fa 
+ 2182  rm out.fa 
+ 2183  ls
+ 2184  vi adddotone.pl 
+ 2185  perl adddotone.pl test.fa out.fa
+ 2186  ll
+ 2187  vi out.fa 
+ 2188  ls
+ 2189  rm out.fa 
+ 2190  vi adddotone.pl 
+ 2191  perl adddotone.pl test.fa out.fa
+ 2192  ll
+ 2193  rm out.fa 
+ 2194  vi adddotone.pl 
+ 2195  perl adddotone.pl test.fa out.fa
+ 2196  ll
+ 2197  vi out.fa 
+ 2198  ls
+ 2199  rm out.fa 
+ 2200  vi adddotone.pl 
+ 2201* 
+ 2202  ll
+ 2203  more out.fa 
+ 2204  vi out.fa 
+ 2205  ls
+ 2206  ll
+ 2207  cp yellow_mRNA.fa ./test.fa
+ 2208  perl adddotone.pl test.fa out.fa
+ 2209  ll
+ 2210  vi adddotone.pl 
+ 2211  perl adddotone.pl test.fa out.fa
+ 2212  ll
+ 2213  vi out.fa 
+ 2214  ls
+ 2215  ~/software_database/Trinotate-3.0.1/Trinotate Trinotate_V3.sqlite init --gene_trans_map LOCtoXM.txt --transcript_fasta out.fa --transdecoder_pep yellow_mRNA.fa.transdecoder.pep 
+ 2216  vi out.fa 
+ 2217  dos2unix out.fa 
+ 2218  sed -i 's/\r//g' out.fa 
+ 2219  vi out.fa 
+ 2220  ls
+ 2221  vi LOCtoXM.txt 
+ 2222  sed -i 's/\r//g' LOCtoXM.txt 
+ 2223  ~/software_database/Trinotate-3.0.1/Trinotate Trinotate_V3.sqlite init --gene_trans_map LOCtoXM.txt --transcript_fasta out.fa --transdecoder_pep yellow_mRNA.fa.transdecoder.pep 
+ 2224  ls
+ 2225  ~/software_database/Trinotate-3.0.1/Trinotate Trinotate_V3.sqlite LOAD_swissprot_blastp blastp.outfmt6 
+ 2226  ~/software_database/Trinotate-3.0.1/Trinotate Trinotate_V3.sqlite LOAD_swissprot_blastx blastx.outfmt6 
+ 2227* ~/software_database/Trinotate-3.0.1/Trinotate Trinotate_V3.sqlite LOAD_custom_blast --outfmt6 custom_db.blastp.outfmt6 --prog blastp --dbtyp
+ 2228  hmmscan --cpu 32 --domblout TrinotatePFAM.out Pfam-A.hmm yellow_mRNA.fa.transdecoder.pep >pfam.log
+ 2229  ls
+ 2230  hmmscan --help
+ 2231  hmmscan -h
+ 2232  :q
+ 2233  ls
+ 2234  vi yellow_mRNA.fa
+ 2235  ls
+ 2236  cd yellow_mRNA.fa.transdecoder_dir/
+ 2237  ls
+ 2238  cd ..
+ 2239  ls
+ 2240  vi pfam.
+ 2241  vi pfam.out
+ 2242  ls
+ 2243  ll
+ 2244  vi pfam.log
+ 2245  hmmscan --cpu 32 --domtblout TrinotatePFAM.out Pfam-A.hmm yellow_mRNA.fa.transdecoder.pep >pfam.log
+ 2246  vi pfam.log
+ 2247  ls
+ 2248  signalp -f short -n signal.out yellow_mRNA.fa.transdecoder.pep 
+ 2249  ~/software_database/signalp-4.1/signalp -f short -n signal.out yellow_mRNA.fa.transdecoder.pep 
+ 2250  ~/software_database/tmhmm-2.0c/tmhmm --short <yellow_mRNA.fa.transdecoder.pep> tmhmm.out
+ 2251  ~/software_database/tmhmm-2.0c/bin/tmhmm --short <yellow_mRNA.fa.transdecoder.pep> tmhmm.out
+ 2252  ~/software_database/Trinotate-3.0.1/util/rnammer_support/RnammerTranscriptome.pl --transcriptome yellow_mRNA.fa --path_to_rnammer ~/software_database/rnammer-1.2.src/rnammer
+ 2253  ~/software_database/Trinotate-3.0.1/util/rnammer_support/RnammerTranscriptome.pl --transcriptome out.fa --path_to_rnammer ~/software_database/rnammer-1.2.src/rnammer
+ 2254  ls
+ 2255  vi yellow_mRNA.fa.rnammer.gff 
+ 2256  ls
+ 2257  vi yellow_mRNA.fa
+ 2258  vi out.fa
+ 2259  ll
+ 2260  ls
+ 2261  vi yellow_mRNA.fa.transdecoder.cds 
+ 2262  ls
+ 2263  vi  yellow_mRNA.fa.transdecoder.pep 
+ 2264  ls
+ 2265  ~/software_database/Trinotate-3.0.1/util/rnammer_support/RnammerTranscriptome.pl --transcriptome out.fa --path_to_rnammer ~/software_database/rnammer-1.2.src/rnammer
+ 2266  ~/software_database/Trinotate-3.0.1/Trinotate Trinotate_V3.sqlite LOAD_pfam TrinotatePFAM.out 
+ 2267  ~/software_database/Trinotate-3.0.1/Trinotate Trinotate_V3.sqlite LOAD_tmhmm tmhmm.out 
+ 2268  ~/software_database/Trinotate-3.0.1/Trinotate Trinotate_V3.sqlite LOAD_signalp signalp.out 
+ 2269  ~/software_database/Trinotate-3.0.1/Trinotate Trinotate_V3.sqlite report > trinotate_annotation_report.xls

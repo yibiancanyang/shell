@@ -10,9 +10,20 @@ names(fpkm)
 datExpr0=as.data.frame(t(fpkm[,-c(1)]));
 names(datExpr0)=fpkm$trans;
 rownames(datExpr0)=names(fpkm)[-c(1)];
-#data<-log10(date[,-1]+0.01)
+
 gsg = goodSamplesGenes(datExpr0, verbose = 3);
 gsg$allOK
+if (!gsg$allOK)
+{
+# Optionally, print the gene and sample names that were removed:
+if (sum(!gsg$goodGenes)>0)
+printFlush(paste("Removing genes:", paste(names(datExpr0)[!gsg$goodGenes], collapse = ", ")));
+if (sum(!gsg$goodSamples)>0)
+printFlush(paste("Removing samples:", paste(rownames(datExpr0)[!gsg$goodSamples], collapse = ", ")));
+# Remove the offending genes and samples from the data:
+datExpr0 = datExpr0[gsg$goodSamples, gsg$goodGenes]
+}
+
 sampleTree = hclust(dist(datExpr0), method = "average")
 sizeGrWindow(12,9)
 par(cex = 0.6)
@@ -33,6 +44,7 @@ powers = c(c(1:10), seq(from = 12, to=20, by=2))
 sft = pickSoftThreshold(datExpr, powerVector = powers, verbose = 5)
 # Plot the results:
 ##sizeGrWindow(9, 5)
+pdf(file = "Scale independence.pdf", wi = 9, he = 5)
 par(mfrow = c(1,2));
 cex1 = 0.9;
 # Scale-free topology fit index as a function of the soft-thresholding power
@@ -48,6 +60,7 @@ plot(sft$fitIndices[,1], sft$fitIndices[,5],
      xlab="Soft Threshold (power)",ylab="Mean Connectivity", type="n",
      main = paste("Mean connectivity"))
 text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
+dev.off()
 
 #=====================================================================================
 # 网络构建有两种方法，One-step和Step-by-step；
@@ -55,7 +68,7 @@ text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
 #=====================================================================================
 
 #3. 一步法网络构建：One-step network construction and module detection
-net = blockwiseModules(datExpr, power = 6, maxBlockSize = 6000,
+net = blockwiseModules(datExpr, power = 7, maxBlockSize = 31665,
                        TOMType = "unsigned", minModuleSize = 30,
                        reassignThreshold = 0, mergeCutHeight = 0.25,
                        numericLabels = TRUE, pamRespectsDendro = FALSE,
@@ -289,3 +302,15 @@ MEs = moduleEigengenes(datExpr, moduleColors)$eigengenes
 MET = orderMEs(MEs)
 sizeGrWindow(7, 6) 
 plotEigengeneNetworks(MET, "Eigengene adjacency heatmap", marHeatmap = c(3,4,2,2), plotDendrograms = FALSE, xLabelsAngle = 90)
+#提取某种模块的所有FPKM矩阵
+yellow_FPKM=as.data.frame(t(datExpr[,moduleColors=="yellow"]))
+#模块PCA分析
+p=prcomp(yellow_FPKM)
+PCA=as.data.frame(p$x)
+PC1=data.frame(rownames(PCA),PCA$PC1)
+colnames(PC1)=c("samples","PC1")
+ggplot(data=plot_data,mapping = aes(x=samples,y=PC1))+geom_bar(stat = 'identity',width = 0.2)+theme(axis.text.x  = element_text(angle=30, vjust=0.5))
+LOC105322290=moduleColors[colnames(datExpr)=="LOC105322285"]
+cyan_FPKM=as.data.frame(t(datExpr[moduleColors=="cyan"]))
+pink_FPKM=as.data.frame(t(datExpr[moduleColors=="pink"]))
+useradd -m -d /public/home/username username

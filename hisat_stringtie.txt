@@ -1,4 +1,4 @@
-export PATH=~/software_database/rnaseq:$PATH
+export PATH=~/bin:$PATH
 gffread ref_oyster_v9_scaffolds.gff3 -T -o ref_oyster_v9_scaffolds.gtf
 
 extract_exons.py oyster_genome_filter_N_five_chr.gtf >oyster.exon
@@ -18,6 +18,8 @@ samtools view -bS dried_gills_7d.sam >unsorted_dried_gills_7d.bam
 samtools view -bS dried_gills_9d.sam >unsorted_dried_gills_9d.bam
 samtools view -bS dried_gills_10d.sam >unsorted_dried_gills_10d.bam
 samtools view -bS dried_gills_11d.sam >unsorted_dried_gills_11d.bam
+samtools sort -@ 8 -o ERR188044_chrX.bam ERR188044_chrX.sam
+ls *.sam |while read id;do (nohup samtools sort -@ 5 -o ${id%%.*}.bam $id &);done 
 samtools sort -@ 8 unsorted_dried_gills_1d.bam dried_gills_1d.bam
 samtools sort -@ 8 unsorted_dried_gills_3d.bam dried_gills_3d.bam
 samtools sort -@ 8 unsorted_dried_gills_5d.bam dried_gills_5d.bam
@@ -25,6 +27,9 @@ samtools sort -@ 8 unsorted_dried_gills_7d.bam dried_gills_7d.bam
 samtools sort -@ 8 unsorted_dried_gills_9d.bam dried_gills_9d.bam
 samtools sort -@ 8 unsorted_dried_gills_10d.bam dried_gills_10d.bam
 samtools sort -@ 8 unsorted_dried_gills_11d.bam dried_gills_11d.bam
+
+ls *.bam |while read id;do nohup stringtie -e -A gene_${id%%.*}.txt -p 3 -G ~/genome/oyster/GCF_000297895.1_oyster_v9_genomic.gff -o ${id%%.*}.gtf -l ${id%%.*} $id &;done 
+
 stringtie -p 32 -G ./genome/oyster_genome_filter_N_five_chr.gtf -o dried_gills_1d.gtf -l dried_gills_1d dried_gills_1d.bam
 stringtie -p 32 -G ./genome/oyster_genome_filter_N_five_chr.gtf -o dried_gills_3d.gtf -l dried_gills_3d dried_gills_3d.bam
 stringtie -p 32 -G ./genome/oyster_genome_filter_N_five_chr.gtf -o dried_gills_5d.gtf -l dried_gills_5d dried_gills_5d.bam
@@ -33,7 +38,9 @@ stringtie -p 32 -G ./genome/oyster_genome_filter_N_five_chr.gtf -o dried_gills_9
 stringtie -p 32 -G ./genome/oyster_genome_filter_N_five_chr.gtf -o dried_gills_10d.gtf -l dried_gills_10d dried_gills_10d.bam
 stringtie -p 32 -G ./genome/oyster_genome_filter_N_five_chr.gtf -o dried_gills_11d.gtf -l dried_gills_11d dried_gills_11d.bam
 stringtie --merge -p 32 -G ./genome/oyster_genome_filter_N_five_chr.gtf -o stringtie_merged.gtf mergelist.txt
-gffcompare -r genome/oyster_genome_filter_N_five_chr.gtf -o merged stringtie_merged.gtf 
+
+gffcompare -r genome/oyster_genome_filter_N_five_chr.gtf -o merged stringtie_merged.gtf
+ls SRR*.gtf |while read id;do (nohup stringtie -e -B -p 2 -G stringtie_merged.gtf -o ./ballgown/${id%%.*}/$id ${id%%.*}.bam &);done
 stringtie -e -B -p 32 -G stringtie_merged.gtf -o ballgown/1d/dried_gills_1d.gtf dried_gills_1d.bam
 stringtie -e -B -p 32 -G stringtie_merged.gtf -o ballgown/3d/dried_gills_3d.gtf dried_gills_3d.bam
 stringtie -e -B -p 32 -G stringtie_merged.gtf -o ballgown/5d/dried_gills_5d.gtf dried_gills_5d.bam
@@ -44,14 +51,15 @@ stringtie -e -B -p 32 -G stringtie_merged.gtf -o ballgown/11d/dried_gills_11d.gt
 
 
 install.packages("devtools",repos="http://cran.us.r-project.org")
->library(ballgown)
->library(RSkittleBrewer) 
->library(genefilter)
->library(dplyr)
->library(devtools)
+library(ballgown)
+library(RSkittleBrewer) 
+library(genefilter)
+library(dplyr)
+library(devtools)
 data_directory = "E:/Rworkspace/extdata"
 bg = ballgown(dataDir=data_directory, samplePattern='sample',pData=pheno_data)
 bg_filt = subset(bg,"rowVars(texpr(bg)) >1",genomesubset=TRUE)
+gene_fpkm=gexpr(bg_filt)
 >results_transcripts = stattest(bg_filt, feature="transcript",meas='FPKM',covariate='time', timecourse=TRUE)
 >results_genes = stattest(bg_filt, feature="gene", meas='FPKM',covariate='time', timecourse=TRUE)
 results_transcripts = data.frame(geneNames=ballgown::geneNames(bg_filt),geneIDs=ballgown::geneIDs(bg_filt), results_transcripts)
@@ -71,4 +79,7 @@ hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334287.fastq -S ./dried_bam/d
 hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334288.fastq -S ./dried_bam/dried_muscle_9d.sam
 hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334289.fastq -S ./dried_bam/dried_muscle_10d.sam
 hisat2 -p 32 -x ./genome/oyster_genome -U ./SRR/SRR334290.fastq -S ./dried_bam/dried_muscle_11d.sam
+ls *.sam |while read id do (nohup samtools sort -@ 8 -o ${id%%.sam}.bam $id
 
+SRR1199058.gtf  SRR1205971.gtf  SRR3623084.gtf  SRR3623086.gtf  SRR3623088.gtf  SRR3623090.gtf
+SRR1199039.gtf  SRR1199228.gtf  SRR3623083.gtf  SRR3623085.gtf  SRR3623087.gtf  SRR3623089.gtf
