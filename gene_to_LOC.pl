@@ -4,12 +4,12 @@ use warnings;
 
 open IN,"<$ARGV[0]";
 open OUT,">$ARGV[1]";
-while(<IN>)
-{
-	my $line = $_;
-	$line =~ s/.*gene:(CGI_[0-9]*) .*\n/>$1\n/g;
-	print OUT $line;
+while(<>){
+	chomp;
+	if($_=~ /.*\tID=(gene[0-9]*);.*Name=(LOC[0-9]*);.*$/){
+		print OUT "$1\t$2\n"; 
+		}
+	
 }
 close IN;
 close OUT;
-

@@ -1,0 +1,27 @@
+#!/usr/bin/perl
+open INFILE,"<input.fasta" or die $!;
+@sequences = <INFILE>;
+close INF ILE;
+FASTA file
+if($sequences[0] =~ /^>/){ #if
+  foreach $sequence(@sequences){ 
+    if ($sequence =~ / /){
+      push(@seqs,"$`\n"); 
+    }
+    else{
+      push(@seqs,$sequence);
+    }}
+  }#if
+  $seq = join("",@seqs);
+  @seq_splits = split(">",$seq);  
+  foreach $seq_split(@seq_splits[1 .. @seq_splits-1]){
+    if($seq_split =~ /\n/){
+     $seqs_hash{$`} = $';}
+  }
+  delete $seqs_hash{""}; 
+   open IN,"<list.txt" or die $!;
+   open OUT,">output.txt" or die $!;
+   while (<IN>) {
+  if(exists seqs_hash{$_}){
+     print OUT ">$_\n$seqs_hash{$_}\n";
+   }
